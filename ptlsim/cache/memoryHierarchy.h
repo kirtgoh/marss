@@ -226,6 +226,9 @@ namespace Memory {
 	void free_message(Message* msg);
 
 	int get_core_pending_offchip_miss(W8 coreid);
+#ifdef DRAMSIM
+	void simulation_done();
+#endif
 
     BaseMachine& get_machine() { return machine_; }
 
@@ -235,6 +238,8 @@ namespace Memory {
 
     void add_cache_mem_controller(Controller* cont) {
         allControllers_.push(cont);
+        //FIXME: assumes only one controller
+        memoryController_ = cont; 
     }
 
     void add_interconnect(Interconnect* conn) {
