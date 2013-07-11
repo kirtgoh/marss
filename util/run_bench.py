@@ -16,6 +16,7 @@ import subprocess
 import sys
 import copy
 import itertools
+import types
 
 from optparse import OptionParser
 from threading import Thread, Lock
@@ -27,8 +28,8 @@ import config
 
 def get_run_config(conf, name):
     # First check if given configuration exists or not
-    conf_name = "run %s" % name
 
+    conf_name = "run %s" % name
     if not conf.has_section(conf_name):
         print("Unable to find configuration %s from config file." % conf_name)
         exit(-1)
@@ -66,11 +67,8 @@ def get_run_configs(run_name, options, conf_parser):
     # Collect all the parameters and construct a 'dict' object with all
     # the information required for running a specific checkpoint
 
-    # Get qemu binary
-    qemu_bin = conf_parser.get(run_sec, 'qemu_bin')
-    if not os.path.exists(qemu_bin):
-        print("Qemu binary file (%s) doesn't exists." % qemu_bin)
-        exit(-1)
+    # Get qemu binary -- added by gaoke
+    qemu_bin = conf_parser.get(run_sec, 'qemu_bin', True)
 
     # Get disk images
     qemu_img = conf_parser.get(run_sec, 'images')
@@ -136,7 +134,7 @@ def get_run_configs(run_name, options, conf_parser):
                 "specified options\n"
         simconfig += options.simconfig
 
-    print("simconfig: %s" % simconfig)
+    #print("simconfig: %s" % simconfig)
 
     # Get optional qemu arguments
     qemu_cmd = ''
@@ -148,23 +146,32 @@ def get_run_configs(run_name, options, conf_parser):
     if 'snapshot' not in qemu_args:
         qemu_args = '%s -snapshot' % qemu_args
 
-    output_dir = options.output_dir + "/"
+    # Get the output directory path
+    if not conf_parser.has_option(run_sec, 'out_dir'):
+        print("Please specify out_dir in section '%s'." % run_sec)
+        exit(-1)
+
+    out_dir = conf_parser.get(run_sec, 'out_dir', True)
+
+    # If not provide config path, use cmdline path 
+    if out_dir =='':
+        output_dir = options.output_dir + "/"
+    else:
+        output_dir = out_dir
+    options.output_dir = output_dir
+
     output_dirs = [output_dir]
 
     if options.iterate > 1:
         output_dirs = []
         for i in range(options.iterate):
-            i_dir = output_dir + "run_%d/" % (i + 1)
+            i_dir = output_dir + ".%d/" % (i + 1)
             output_dirs.append(i_dir)
-            if not os.path.exists(i_dir):
-                os.makedirs(i_dir)
-    else:
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
 
     # For each checkpoint create a run_config dict and add to list
     img_idx = 0
     for o_dir, check_pt in itertools.product(output_dirs, check_list):
+    #    print "o_dir:" + o_dir
         if vnc_counter != None:
             vnc_t = vnc_counter + vnc_inc
             vnc_inc += 1
@@ -201,6 +208,10 @@ opt_parser.add_option("--chk-names", dest="chk_names", type="string",
         "default sets of checkpoints specified in config file.", default="")
 opt_parser.add_option("-s", "--simconfig",
         help="Override/Add simulation config parameter")
+opt_parser.add_option("-m","--machine", dest="machine_tag", type="string",
+        help="Used to generate output dir", default="xeon-4-1")
+opt_parser.add_option("-a","--address-map", dest="scheme", type="string",
+        help="Which addressmapping scheme used, and genernate output dir", default="Nehalem")
 
 (options, args) = opt_parser.parse_args()
 
@@ -219,6 +230,8 @@ out_to_stdout = False
 
 checkpoint_lock = Lock()
 run_idx = 0
+
+# Config parameters for each checkpoint
 run_configs = []
 for arg in args:
     run_configs.extend(get_run_configs(arg, options, conf_parser))
@@ -228,15 +241,8 @@ num_threads = min(int(options.num_insts), len(run_configs))
 #print("Run configurations: %s" % str(run_configs))
 print("Total run configurations: %s" % (len(run_configs)))
 print("%d parallel simulation instances will be run." % num_threads)
-print("All files will be saved in: %s" % options.output_dir)
 
-def pty_to_stdout(fd, untill_chr):
-    chr = '1'
-    while chr != untill_chr:
-        chr = os.read(fd, 1)
-        sys.stdout.write(chr)
-    sys.stdout.flush()
-
+# also used to substitue other *simconfig* 's variables according *args*
 def gen_simconfig(args, simconfig):
     gen_cfg = simconfig
     recursive_count = 0
@@ -341,7 +347,20 @@ class RunSim(Thread):
             config_args = copy.copy(conf_parser.defaults())
             config_args['out_dir'] = os.path.realpath(run_cfg['out_dir'])
             config_args['bench'] = checkpoint
+            config_args['machine_tag'] = options.machine_tag
+            config_args['scheme'] = options.scheme
+
             t_simconfig = gen_simconfig(config_args, run_cfg['simcfg'])
+            t_outdir = gen_simconfig(config_args, run_cfg['out_dir'])
+
+            run_cfg['qemu_bin'] = gen_simconfig(config_args, run_cfg['qemu_bin'])
+            if not os.path.exists(run_cfg['qemu_bin']):
+                print("Qemu binary file (%s) doesn't exists." % run_cfg['qemu_bin'])
+                exit(-1)
+
+            #  the position creating output directory have been changed here
+            if not os.path.exists(t_outdir):
+                os.makedirs(t_outdir)
             log_file = get_log_file(t_simconfig)
             sim_file_cmd_name = log_file.replace(".log", ".simcfg")
             sim_file_cmd = open(sim_file_cmd_name, "w")
@@ -361,19 +380,21 @@ class RunSim(Thread):
                 self.add_to_cmd('-nographic')
 
             # Add Image at the end
+            self.add_to_cmd('-hda %s' % run_cfg['qemu_img'])
             self.add_to_cmd('-drive cache=unsafe,file=%s' % run_cfg['qemu_img'])
             self.add_to_cmd('-simconfig %s' % sim_file_cmd_name)
             self.add_to_cmd('-loadvm %s' % checkpoint)
             self.add_to_cmd(run_cfg['qemu_args'])
 
             print("Starting Checkpoint: %s" % checkpoint)
+            print("Files will be saved in: %s" % t_outdir)
             print("Command: %s" % self.qemu_cmd)
 
             p = subprocess.Popen(self.qemu_cmd.split(), stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT, stdin=subprocess.PIPE, bufsize=0)
 
-            monitor_pty = None
             serial_pty = None
+            pty_term = None
 
             while p.poll() is None:
                 line = p.stdout.readline()
@@ -382,16 +403,17 @@ class RunSim(Thread):
                     dev_name = line[len(pty_prefix):].strip()
 
                     # Open the device terminal and send simulation command
-                    # pty_term = os.open(dev_name, os.O_RDWR)
-                    pty_term = dev_name
+                    pty_term = os.open(dev_name, os.O_RDWR)
+                    serial_pty = dev_name 
 
-                    serial_pty = pty_term
+                    break
 
-                    if serial_pty != None:
-                        break
+            if pty_term == None:
+                print("ERROR:While connecting with pty terminal")
 
-            # Redirect output of serial terminal to file
-            serial_thread = SerialOut('%s%s.out' % (run_cfg['out_dir'], checkpoint), serial_pty)
+
+            serial_thread = SerialOut('%s/%s_%s.%s.out' % (t_outdir, options.machine_tag, checkpoint, options.scheme), serial_pty)
+#            print t_outdir
 
             # os.dup2(serial_pty, sys.stdout.fileno())
 
@@ -404,7 +426,6 @@ class RunSim(Thread):
 
             serial_thread.join()
             stdout_thread.join()
-
 
 # Now start RunSim threads
 threads = []

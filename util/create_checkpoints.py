@@ -376,7 +376,6 @@ class RunSim(Thread):
                     # Open the device terminal and send simulation command
                     pty_term = os.open(dev_name, os.O_RDWR)
                     serial_pty = dev_name 
-                    print dev_name
 
                     break
 
@@ -403,7 +402,6 @@ class RunSim(Thread):
             os.close(pty_term)
 
             serial_thread = SerialOut('%s/%s_%s.out' % (t_outdir, options.machine_tag, checkpoint), serial_pty)
-            print t_outdir
 
             # os.dup2(serial_pty, sys.stdout.fileno())
 
@@ -431,6 +429,7 @@ taskset -c %d ./%s %s &\n''' % (spec_dir, bench[1], coreid, bench[2], bench[3])
 
 chk_list = [
 		['2lbm4c', 'lbm','lbm'],
+		['2lbm4c2', 'lbm','lbm'],
 		]
 
 spec_bench_specifiers = [
