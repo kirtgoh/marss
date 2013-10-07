@@ -1,3 +1,15 @@
+# compiler script
+compile.py
+
+# compiled qemu objects
+qemu/hmp-commands.h
+qemu/pc-bios/optionrom/linuxboot.img
+qemu/pc-bios/optionrom/linuxboot.raw
+qemu/pc-bios/optionrom/multiboot.img
+qemu/qemu-system-x86_64-*
+qemu/qmp-commands.h
+
+#
 # Compiled Object files
 *.slo
 *.lo
@@ -10,7 +22,6 @@
 *.lai
 *.la
 *.a
-
 *.py[co]
 
 # Packages
@@ -35,7 +46,7 @@ pip-log.txt
 nosetests.xml
 
 # Marss log/stats/out files
-*.log
+*.log*
 *.stats
 *.yml
 *.out
