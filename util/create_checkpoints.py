@@ -126,6 +126,9 @@ def get_run_configs(run_name, options, conf_parser):
     if conf_parser.has_option(run_sec, 'qemu_args'):
         qemu_args = conf_parser.get(run_sec, 'qemu_args')
 
+#    if 'snapshot' not in qemu_args:
+#        qemu_args = '%s -snapshot' % qemu_args
+
     # Get the output directory path
     if not conf_parser.has_option(run_sec, 'out_dir'):
         print("Please specify out_dir in section '%s'." % run_sec)
@@ -189,6 +192,8 @@ opt_parser.add_option("--chk-names", dest="chk_names", type="string",
         "default sets of checkpoints specified in config file.", default="")
 opt_parser.add_option("-m","--machine", dest="machine_tag", type="string",
         help="Used to generate output dir", default="xeon-4-1")
+opt_parser.add_option("-a","--address-map", dest="scheme", type="string",
+        help="Which addressmapping scheme used, and genernate output dir", default="Nehalem")
 
 (options, args) = opt_parser.parse_args()
 
@@ -332,6 +337,7 @@ class RunSim(Thread):
             config_args['out_dir'] = os.path.realpath(run_cfg['out_dir'])
             config_args['bench'] = checkpoint
             config_args['machine_tag'] = options.machine_tag
+            config_args['scheme'] = options.scheme
 
             t_outdir = gen_value(config_args, run_cfg['out_dir'])
 
@@ -422,39 +428,108 @@ vm_smp = 4
 spec_dir = "/root/spec2006bin/gcc/"
 
 def gen_commands(bench, coreid):
-	for bench in spec_bench_specifiers:
-		cmd = '''cd %s%s
-taskset -c %d ./%s %s &\n''' % (spec_dir, bench[1], coreid, bench[2], bench[3])
-		return cmd
+	for bench_ in spec_bench_specifiers:
+		if (bench_[0] == bench):
+			cmd = '''cd %s%s
+taskset -c %d ./%s %s &\n''' % (spec_dir, bench_[1], coreid, bench_[2], bench_[3])
+			return cmd
 
 chk_list = [
-		['2lbm4c', 'lbm','lbm'],
-		['2lbm4c2', 'lbm','lbm'],
+
+		['1perl1c', 'perl'],
+		['1bzip1c', 'bzip'],
+		['1gcc1c', 'gcc'],
+		['1bwaves1c', 'bwaves'],
+		['1gamess1c', 'gamess'],
+		['1mcf1c', 'mcf'],
+		['1zeusmp1c', 'zeusmp'],
+		['1gromacs1c', 'gromacs'],
+		['1cactusADM1c', 'cactusADM'],
+		['1leslie3d1c', 'leslie3d'],
+		['1namd1c', 'namd'],
+		['1gobmk1c', 'gobmk'],
+		['1deal1c', 'deal'],
+		['1soplex1c', 'soplex'],
+		['1povray1c', 'povray'],
+		['1calculix1c', 'calculix'],
+		['1hmmer1c', 'hmmer'],
+		['1sjeng1c', 'sjeng'],
+		['1gems1c', 'GemsFDTD'],
+		['1quantum1c', 'quantum'],
+		['1h2641c', 'h264'],
+		['1tonto1c', 'tonto'],
+		['1lbm1c', 'lbm'],
+		['1omnetpp1c', 'omnetpp'],
+		['1astar1c', 'astar'],
+		['1wrf1c', 'wrf'],
+		['1sphinx1c', 'sphinx'],
+		['1xalanc1c', 'xalanc'],
 		]
 
 spec_bench_specifiers = [
-		['lbm', '470.lbm','lbm_base.gcc','3000 reference.dat 0 0 100_100_130_ldc.of'],
+
+        ['perl', '400.perl', 'perlbench_base.gcc', '-I./lib checkspam.pl 2500 5 25 11 150 1 1 1 1'],
+        ['bzip', '401.bzip2','bzip2_base.gcc','input.program 280'],
+        ['gcc', '403.gcc', 'gcc_base.gcc', 's04.i -o s04.s'],
+        ['bwaves', '410.bwaves', 'bwaves_base.gcc', ''],
+        ['gamess', '416.gamess', 'gamess_base.gcc', '< h2ocu2+.gradient.config'],
+        ['mcf', '429.mcf', 'mcf_base.gcc', 'inp.in'],
+        ['milc', '433.milc', 'milc_base.gcc', '< su3imp.in'],
+        ['zeusmp', '434.zeusmp', 'zeusmp_base.gcc', ''],
+        ['gromacs', '435.gromacs', 'gromacs_base.gcc', '--silent -deffnm gromacs -nice 0'],
+        ['cactusADM', '436.cactusADM', 'cactusADM_base.gcc', 'benchADM.par'],
+        ['leslie3d', '437.leslie3d', 'leslie3d_base.gcc', '< leslie3d.in'],
+        ['namd', '444.namd', 'namd_base.gcc', '--input namd.input --iterations 38 --output namd.out'],
+        ['gobmk', '445.gobmk', 'gobmk_base.gcc', '--quite --mode gtp < nngs.tst'],
+        ['deal', '447.dealII', 'dealII_base.gcc', '23'],
+        ['soplex', '450.soplex', 'soplex_base.gcc', '-m3500 ref.mps'],
+        ['povray', '453.povray', 'povray_base.gcc', 'SPEC-benchmark-ref.ini'],
+        ['calculix', '454.calculix', 'calculix_base.gcc', '-i hyperviscoplastic'],
+        ['hmmer', '456.hmmer', 'hmmer_base.gcc', 'nph3.hmm swiss41'],
+        ['sjeng', '458.sjeng', 'sjeng_base.gcc', 'ref.txt'],
+        ['GemsFDTD', '459.GemsFDTD', 'GemsFDTD_base.gcc', ''],
+        ['quantum', '462.libquantum', 'libquantum_base.gcc', '1397 8'],
+        ['h264', '464.h264ref', 'h264ref_base.gcc', '-d sss_encoder_main.cfg'],
+        ['tonto', '465.tonto', 'tonto_base.gcc', ''],
+        ['lbm', '470.lbm', 'lbm_base.gcc', '3000 reference.dat 0 0 100_100_130_ldc.of'],
+        ['omnetpp', '471.omnetpp', 'omnetpp_base.gcc', 'omnetpp.ini'],
+        ['astar', '473.astar', 'astar_base.gcc', 'BigLakes2048.cfg'],
+        ['wrf', '481.wrf', 'wrf_base.gcc', ''],
+        ['sphinx', '482.sphinx3', 'sphinx_base.gcc', 'ctlfile . args.an4'],
+        ['xalanc', '483.xalancbmk', 'xalancbmk_base.gcc', '-v t5.xml xalanc.xsl'],
 		]
 
 spec_list = []
 for chk in chk_list:
-	cmd_list='~/set_semaphore %d %s &\n' % (len(chk) - 1, chk[0])
+	cmd_list=''
 	for i in range(len(chk)):
 		if i == 0:
 			name = chk[i]
 		if i != 0:
 			cmd_list += gen_commands(chk[i],i-1)
-
+	cmd_list+='~/checkpoint_after 10000M %s\n' % chk[0]
 	chk_ = {'name': chk[0],
 			'command':cmd_list
 			}
-#	print cmd_list
 	spec_list.append(chk_)
 
+# Parse with parsecmgmt
+parsec_bench_list = ['blackscholes', 'bodytrack', 'ferret', 'freqmine',
+        'swaptions', 'fluidanimate', 'vips', 'x264', 'canneal', 'dedup',
+        'streamcluster', 'facesim', 'raytrace']
+
+pre_setup_str = '''cd parsec-2.1; . env.sh
+        export PARSEC_CPU_NUM=`grep processor /proc/cpuinfo | wc -l`; echo $PARSEC_CPU_NUM
+        '''
+parsec_roi_list = []
+for bench in parsec_bench_list:
+    pre_command = "%s\nexport CHECKPOINT_NAME=\"%s\"\n" % (pre_setup_str, bench)
+    parsec_cmd = "parsecmgmt -a run -c gcc-hooks -x roi -n %d -i simlarge -p %s" % (vm_smp, bench)
+    bench_dict = {'name' : bench, 'command' : '%s\n%s\n' % (pre_command, parsec_cmd) }
+    parsec_roi_list.append(bench_dict)
 
 # Now start RunSim threads with running commands
 run_list = spec_list 
-
 
 # Now start RunSim threads
 threads = []

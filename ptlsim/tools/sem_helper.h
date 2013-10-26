@@ -55,4 +55,20 @@ void wait_semaphore (int sem_id)
     semop(sem_id, &sem_op, 1);
 }
 
+void sync_all_processes()
+{
+    int sem_id;
+    int rc;
+
+    /* Get semaphore */
+    sem_id = get_semaphore();
+
+    /* Decrement semaphore value */
+    decrement_semaphore (sem_id);
+
+    /* Now wait till semaphore value reaches 0 */
+    wait_semaphore (sem_id);
+}
+
+
 #endif
