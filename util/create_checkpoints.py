@@ -464,6 +464,23 @@ chk_list = [
 		['1wrf1c', 'wrf'],
 		['1sphinx1c', 'sphinx'],
 		['1xalanc1c', 'xalanc'],
+
+		['1perl4c', 'perl'],
+		['1bzip4c', 'bzip'],
+		['1gcc4c', 'gcc'],
+		['1mcf4c', 'mcf'],
+		['1cactusADM4c', 'cactusADM'],
+		['1leslie3d4c', 'leslie3d'],
+		['1namd4c', 'namd'],
+		['1deal4c', 'deal'],
+		['1soplex4c', 'soplex'],
+		['1povray4c', 'povray'],
+		['1calculix4c', 'calculix'],
+		['1hmmer4c', 'hmmer'],
+		['1sjeng4c', 'sjeng'],
+		['1quantum4c', 'quantum'],
+		['1lbm4c', 'lbm'],
+		['1omnetpp4c', 'omnetpp'],
 		]
 
 spec_bench_specifiers = [
@@ -507,7 +524,7 @@ for chk in chk_list:
 			name = chk[i]
 		if i != 0:
 			cmd_list += gen_commands(chk[i],i-1)
-	cmd_list+='~/checkpoint_after 10000M %s\n' % chk[0]
+	cmd_list+='~/checkpoint_after 5000M %s\n' % chk[0]
 	chk_ = {'name': chk[0],
 			'command':cmd_list
 			}
