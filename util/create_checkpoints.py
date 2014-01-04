@@ -421,9 +421,6 @@ class RunSim(Thread):
             serial_thread.join()
             stdout_thread.join()
 
-# num threads
-vm_smp = 4
-
 # Spec2006 Parse
 spec_dir = "/root/spec2006bin/gcc/"
 
@@ -434,7 +431,7 @@ def gen_commands(bench, coreid):
 taskset -c %d ./%s %s &\n''' % (spec_dir, bench_[1], coreid, bench_[2], bench_[3])
 			return cmd
 
-chk_list = [
+spec_chk_list = [
 
 		['1perl1c', 'perl'],
 		['1bzip1c', 'bzip'],
@@ -517,20 +514,113 @@ spec_bench_specifiers = [
 		]
 
 spec_list = []
-for chk in chk_list:
-	cmd_list=''
+for chk in spec_chk_list:
+	cmd_list='~/checkpoint_after 10000M %s\n' % chk[0]
 	for i in range(len(chk)):
 		if i == 0:
 			name = chk[i]
 		if i != 0:
 			cmd_list += gen_commands(chk[i],i-1)
-	cmd_list+='~/checkpoint_after 5000M %s\n' % chk[0]
 	chk_ = {'name': chk[0],
 			'command':cmd_list
 			}
 	spec_list.append(chk_)
 
 # Parse with parsecmgmt
+parsec_chk_list = [
+# 4 cores
+		['1blackscholes4c', 1 ,'blackscholes'],
+		['1bodytrack4c', 1 ,'bodytrack'],
+		['1canneal4c', 1 ,'canneal'],
+		['1ferret4c', 1 ,'ferret'],
+		['1fluidanimate4c', 1 ,'fluidanimate'],
+		['1freqmine4c', 1 ,'freqmine'],
+		['1streamcluster4c', 1 ,'streamcluster'],
+		['1vips4c', 1 ,'vips'],
+		['1x2644c', 1 ,'x264'],
+
+		['4blackscholes4c', 4 ,'blackscholes'],
+		['4bodytrack4c', 4 ,'bodytrack'],
+		['4canneal4c', 4 ,'canneal'],
+		['4ferret4c', 4 ,'ferret'],
+		['4fluidanimate4c', 4 ,'fluidanimate'],
+		['4freqmine4c', 4 ,'freqmine'],
+		['4streamcluster4c', 4 ,'streamcluster'],
+		['4vips4c', 4 ,'vips'],
+		['4x2644c', 4 ,'x264'],
+
+# 8 cores
+		['1blackscholes8c', 1 ,'blackscholes'],
+		['1bodytrack8c', 1 ,'bodytrack'],
+		['1canneal8c', 1 ,'canneal'],
+		['1ferret8c', 1 ,'ferret'],
+		['1fluidanimate8c', 1 ,'fluidanimate'],
+		['1freqmine8c', 1 ,'freqmine'],
+		['1streamcluster8c', 1 ,'streamcluster'],
+		['1vips8c', 1 ,'vips'],
+		['1x2648c', 1 ,'x264'],
+
+		['4blackscholes8c', 4 ,'blackscholes'],
+		['4bodytrack8c', 4 ,'bodytrack'],
+		['4canneal8c', 4 ,'canneal'],
+		['4ferret8c', 4 ,'ferret'],
+		['4fluidanimate8c', 4 ,'fluidanimate'],
+		['4freqmine8c', 4 ,'freqmine'],
+		['4streamcluster8c', 4 ,'streamcluster'],
+		['4vips8c', 4 ,'vips'],
+		['4x2648c', 4 ,'x264'],
+
+		['8blackscholes8c', 8 ,'blackscholes'],
+		['8bodytrack8c', 8 ,'bodytrack'],
+		['8canneal8c', 8 ,'canneal'],
+		['8ferret8c', 8 ,'ferret'],
+		['8fluidanimate8c', 8 ,'fluidanimate'],
+		['8freqmine8c', 8 ,'freqmine'],
+		['8streamcluster8c', 8 ,'streamcluster'],
+		['8vips8c', 8 ,'vips'],
+		['8x2648c', 8 ,'x264'],
+# 16 cores
+		['1blackscholes16c', 1 ,'blackscholes'],
+		['1bodytrack16c', 1 ,'bodytrack'],
+		['1canneal16c', 1 ,'canneal'],
+		['1ferret16c', 1 ,'ferret'],
+		['1fluidanimate16c', 1 ,'fluidanimate'],
+		['1freqmine16c', 1 ,'freqmine'],
+		['1streamcluster16c', 1 ,'streamcluster'],
+		['1vips16c', 1 ,'vips'],
+		['1x26416c', 1 ,'x264'],
+
+		['4blackscholes16c', 4 ,'blackscholes'],
+		['4bodytrack16c', 4 ,'bodytrack'],
+		['4canneal16c', 4 ,'canneal'],
+		['4ferret16c', 4 ,'ferret'],
+		['4fluidanimate16c', 4 ,'fluidanimate'],
+		['4freqmine16c', 4 ,'freqmine'],
+		['4streamcluster16c', 4 ,'streamcluster'],
+		['4vips16c', 4 ,'vips'],
+		['4x26416c', 4 ,'x264'],
+
+		['8blackscholes16c', 8 ,'blackscholes'],
+		['8bodytrack16c', 8 ,'bodytrack'],
+		['16canneal16c', 8 ,'canneal'],
+		['8ferret16c', 8 ,'ferret'],
+		['8fluidanimate16c', 8 ,'fluidanimate'],
+		['8freqmine16c', 8 ,'freqmine'],
+		['8streamcluster16c', 8 ,'streamcluster'],
+		['8vips16c', 8 ,'vips'],
+		['8x26416c', 8 ,'x264'],
+
+		['16blackscholes16c', 16 ,'blackscholes'],
+		['16bodytrack16c', 16 ,'bodytrack'],
+		['16canneal16c', 16 ,'canneal'],
+		['16ferret16c', 16 ,'ferret'],
+		['16fluidanimate16c', 16 ,'fluidanimate'],
+		['16freqmine16c', 16 ,'freqmine'],
+		['16streamcluster16c', 16 ,'streamcluster'],
+		['16vips16c', 16 ,'vips'],
+		['16x26416c', 16 ,'x264'],
+		]
+
 parsec_bench_list = ['blackscholes', 'bodytrack', 'ferret', 'freqmine',
         'swaptions', 'fluidanimate', 'vips', 'x264', 'canneal', 'dedup',
         'streamcluster', 'facesim', 'raytrace']
@@ -539,14 +629,17 @@ pre_setup_str = '''cd parsec-2.1; . env.sh
         export PARSEC_CPU_NUM=`grep processor /proc/cpuinfo | wc -l`; echo $PARSEC_CPU_NUM
         '''
 parsec_roi_list = []
-for bench in parsec_bench_list:
-    pre_command = "%s\nexport CHECKPOINT_NAME=\"%s\"\n" % (pre_setup_str, bench)
+for chk in parsec_chk_list:
+    vm_smp = chk[1]
+    bench = chk[2]
+    pre_command = "%s\nexport CHECKPOINT_NAME=\"%s\"\n" % (pre_setup_str, chk[0])
     parsec_cmd = "parsecmgmt -a run -c gcc-hooks -x roi -n %d -i simlarge -p %s" % (vm_smp, bench)
-    bench_dict = {'name' : bench, 'command' : '%s\n%s\n' % (pre_command, parsec_cmd) }
+    bench_dict = {'name' : chk[0], 'command' : '%s\n%s\n' % (pre_command, parsec_cmd) }
     parsec_roi_list.append(bench_dict)
 
 # Now start RunSim threads with running commands
-run_list = spec_list 
+#run_list = spec_list 
+run_list = parsec_roi_list 
 
 # Now start RunSim threads
 threads = []
