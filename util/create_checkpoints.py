@@ -136,7 +136,7 @@ def get_run_configs(run_name, options, conf_parser):
 
     out_dir = conf_parser.get(run_sec, 'out_dir', True)
 
-    # If not provide config path, use cmdline path 
+    # If not provide config path, use cmdline path
     if out_dir =='':
         output_dir = options.output_dir + "/"
     else:
@@ -381,7 +381,7 @@ class RunSim(Thread):
 
                     # Open the device terminal and send simulation command
                     pty_term = os.open(dev_name, os.O_RDWR)
-                    serial_pty = dev_name 
+                    serial_pty = dev_name
 
                     break
 
@@ -542,10 +542,14 @@ parsec_chk_list = [
 		['4blackscholes4c', 4 ,'blackscholes'],
 		['4bodytrack4c', 4 ,'bodytrack'],
 		['4canneal4c', 4 ,'canneal'],
+		['4dedup4c', 4 ,'dedup'],
+		['4facesim4c', 4 ,'facesim'],
 		['4ferret4c', 4 ,'ferret'],
 		['4fluidanimate4c', 4 ,'fluidanimate'],
 		['4freqmine4c', 4 ,'freqmine'],
+		['4raytrace4c', 4 ,'raytrace'],
 		['4streamcluster4c', 4 ,'streamcluster'],
+		['4swaptions', 4 ,'swaptions'],
 		['4vips4c', 4 ,'vips'],
 		['4x2644c', 4 ,'x264'],
 
@@ -638,8 +642,8 @@ for chk in parsec_chk_list:
     parsec_roi_list.append(bench_dict)
 
 # Now start RunSim threads with running commands
-#run_list = spec_list 
-run_list = parsec_roi_list 
+#run_list = spec_list
+run_list = parsec_roi_list
 
 # Now start RunSim threads
 threads = []
