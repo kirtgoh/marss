@@ -466,11 +466,14 @@ spec_chk_list = [
 		['1bzip4c', 'bzip'],
 		['1gcc4c', 'gcc'],
 		['1mcf4c', 'mcf'],
+		['1gobmk4c', 'gobmk'],
+		['1h2644c', 'h264'],
+		['1astar4c', 'astar'],
+		['1xalanc4c', 'xalanc'],
 		['1cactusADM4c', 'cactusADM'],
 		['1leslie3d4c', 'leslie3d'],
 		['1namd4c', 'namd'],
 		['1deal4c', 'deal'],
-		['1soplex4c', 'soplex'],
 		['1povray4c', 'povray'],
 		['1calculix4c', 'calculix'],
 		['1hmmer4c', 'hmmer'],
@@ -478,6 +481,18 @@ spec_chk_list = [
 		['1quantum4c', 'quantum'],
 		['1lbm4c', 'lbm'],
 		['1omnetpp4c', 'omnetpp'],
+# CFP
+		['1bwaves4c', 'bwaves'],
+		['1gamess4c', 'gamess'],
+    ['1milc4c', 'milc'],
+		['1zeusmp4c', 'zeusmp'],
+		['1gromacs4c', 'gromacs'],
+		['1gems4c', 'GemsFDTD'],
+		['1tonto4c', 'tonto'],
+		['1wrf4c', 'wrf'],
+		['1soplex4c', 'soplex'],
+    ['1sphinx4c', 'sphinx'],
+    
 		]
 
 spec_bench_specifiers = [
@@ -494,7 +509,7 @@ spec_bench_specifiers = [
         ['cactusADM', '436.cactusADM', 'cactusADM_base.gcc', 'benchADM.par'],
         ['leslie3d', '437.leslie3d', 'leslie3d_base.gcc', '< leslie3d.in'],
         ['namd', '444.namd', 'namd_base.gcc', '--input namd.input --iterations 38 --output namd.out'],
-        ['gobmk', '445.gobmk', 'gobmk_base.gcc', '--quite --mode gtp < nngs.tst'],
+        ['gobmk', '445.gobmk', 'gobmk_base.gcc', '--quiet --mode gtp < nngs.tst'],
         ['deal', '447.dealII', 'dealII_base.gcc', '23'],
         ['soplex', '450.soplex', 'soplex_base.gcc', '-m3500 ref.mps'],
         ['povray', '453.povray', 'povray_base.gcc', 'SPEC-benchmark-ref.ini'],
@@ -515,7 +530,8 @@ spec_bench_specifiers = [
 
 spec_list = []
 for chk in spec_chk_list:
-	cmd_list='~/checkpoint_after 10000M %s\n' % chk[0]
+	cmd_list='~/checkpoint_after 10M %s\n' % chk[0]
+	#cmd_list='~/checkpoint_after 10000M %s\n' % chk[0]
 	for i in range(len(chk)):
 		if i == 0:
 			name = chk[i]
@@ -642,8 +658,8 @@ for chk in parsec_chk_list:
     parsec_roi_list.append(bench_dict)
 
 # Now start RunSim threads with running commands
-#run_list = spec_list
-run_list = parsec_roi_list
+run_list = spec_list
+#run_list = parsec_roi_list
 
 # Now start RunSim threads
 threads = []
