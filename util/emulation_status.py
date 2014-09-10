@@ -126,8 +126,8 @@ def get_run_configs(run_name, options, conf_parser):
     if conf_parser.has_option(run_sec, 'qemu_args'):
         qemu_args = conf_parser.get(run_sec, 'qemu_args')
 
-#    if 'snapshot' not in qemu_args:
-#        qemu_args = '%s -snapshot' % qemu_args
+    if 'snapshot' not in qemu_args:
+        qemu_args = '%s -snapshot' % qemu_args
 
     # Get the output directory path
     if not conf_parser.has_option(run_sec, 'out_dir'):
@@ -543,7 +543,7 @@ spec_bench_specifiers = [
 
 spec_list = []
 for chk in spec_chk_list:
-	cmd_list='~/checkpoint_after 10000M %s\n' % chk[0]
+	cmd_list=''
 	#cmd_list='~/checkpoint_after 10000M %s\n' % chk[0]
 	for i in range(len(chk)):
 		if i == 0:
