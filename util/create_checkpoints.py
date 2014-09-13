@@ -494,17 +494,56 @@ spec_chk_list = [
     ['1sphinx4c', 'sphinx'],
     
 # 4 benchs 4 core
-		['A4c','gcc','bzip','namd','perl'],
-		['B4c','mcf','milc','deal','gobmk'],
-		['C4c','hmmer','sjeng','povray','quantum'],
-		['D4c','lbm','gamess','calculix','h264'],
-		['E4c','tonto','bwaves','omnetpp','gromacs'],
-		['F4c','wrf','astar','zeusmp','perl'],
-		['G4c','namd','gobmk','soplex','xalanc'],
-		['H4c','sjeng','deal','sphinx','cactusADM'],
-		['I4c','bzip','gamess','povray','leslie3d'],
-		['J4c','milc','calculix','gromacs','GemsFDTD'],
-		['4quantum4c', 'quantum','quantum','quantum','quantum'],
+		['A4c','sjeng','milc','h264','namd'],
+		['B4c','milc','lbm','omnetpp','h264'],
+		['C4c','lbm','mcf','deal','omnetpp'],
+		['D4c','mcf','quantum','gromacs','deal'],
+		['E4c','quantum','soplex','povray','gromacs'],
+		['F4c','soplex','gobmk','xalanc','povray'],
+		['G4c','gobmk','astar','hmmer','xalanc'],
+		['H4c','astar','sphinx','perl','hmmer'],
+		['I4c','sphinx','bzip','gcc','perl'],
+		['J4c','bzip','cactusADM','calculix','gcc'],
+
+		# ['A4c','gcc','bzip','namd','perl'],
+		# ['B4c','mcf','milc','deal','gobmk'],
+		# ['C4c','hmmer','sjeng','povray','quantum'],
+		# ['D4c','lbm','gamess','calculix','h264'],
+		# ['E4c','tonto','bwaves','omnetpp','gromacs'],
+		# ['F4c','wrf','astar','zeusmp','perl'],
+		# ['G4c','namd','gobmk','soplex','xalanc'],
+		# ['H4c','sjeng','deal','sphinx','cactusADM'],
+		# ['I4c','bzip','gamess','povray','leslie3d'],
+		# ['J4c','milc','calculix','gromacs','GemsFDTD'],
+		# ['4quantum4c', 'quantum','quantum','quantum','quantum'],
+
+# 8 benchs 8 core
+		['18c','gcc','lbm','lbm','milc','namd','namd','soplex','tonto'],
+		['28c','gcc','gcc','leslie3d','quantum','mcf','sjeng','zeusmp','zeusmp'],
+		['38c','bzip','calculix','GemsFDTD','GemsFDTD','leslie3d','namd','omnetpp','wrf'],
+		['48c','astar','gcc','leslie3d','quantum','namd','soplex','soplex','tonto'],
+		['58c','cactusADM','GemsFDTD','gromacs','lbm','lbm','mcf','sphinx','wrf'],
+		['68c','bzip','GemsFDTD','gobmk','h264','leslie3d','leslie3d','sphinx','xalanc'],
+		['78c','deal','leslie3d','mcf','namd','soplex','sphinx','tonto','xalanc'],
+		['88c','bzip','calculix','lbm','quantum','milc','namd','soplex','xalanc'],
+		['98c','astar','h264','quantum','quantum','sphinx','sphinx','wrf','xalanc'],
+		['108c','astar','bzip','quantum','omnetpp','sjeng','sjeng','soplex','xalanc'],
+		['118c','astar','h264','lbm','lbm','quantum','namd','omnetpp','soplex'],
+		['128c','gamess','lbm','leslie3d','omnetpp','tonto','wrf','xalanc','xalanc'],
+		['138c','cactusADM','GemsFDTD','hmmer','quantum','sphinx','xalanc','xalanc','zeusmp'],
+		['148c','calculix','lbm','lbm','quantum','milc','perl','soplex','xalanc'],
+		['158c','astar','GemsFDTD','lbm','quantum','quantum','perl','xalanc','zeusmp'],
+		['168c','leslie3d','mcf','sjeng','soplex','sphinx','sphinx','xalanc','xalanc'],
+		['178c','cactusADM','gamess','quantum','quantum','mcf','milc','omnetpp','soplex'],
+		['188c','cactusADM','lbm','lbm','lbm','quantum','mcf','perl','xalanc'],
+		['198c','lbm','mcf','milc','milc','omnetpp','perl','soplex','xalanc'],
+		['208c','cactusADM','gamess','GemsFDTD','mcf','mcf','omnetpp','omnetpp','xalanc'],
+		['218c','bwaves','GemsFDTD','leslie3d','leslie3d','mcf','omnetpp','soplex','xalanc'],
+		['228c','cactusADM','deal','gcc','quantum','omnetpp','omnetpp','xalanc','xalanc'],
+		['238c','gamess','lbm','mcf','omnetpp','omnetpp','soplex','sphinx','xalanc'],
+		['248c','gamess','lbm','quantum','mcf','namd','omnetpp','xalanc','xalanc'],
+		['258c','lbm','omnetpp','omnetpp','soplex','wrf','xalanc','xalanc','zeusmp'],
+		['268c','bwaves','gromacs','quantum','mcf','omnetpp','omnetpp','soplex','xalanc'],
 		['278c','bwaves','GemsFDTD','quantum','quantum','quantum','namd','omnetpp','xalanc'],
 		]
 
@@ -543,7 +582,7 @@ spec_bench_specifiers = [
 
 spec_list = []
 for chk in spec_chk_list:
-	cmd_list='~/checkpoint_after 10000M %s\n' % chk[0]
+	cmd_list='~/set_semaphore %d %s &\n' % (len(chk)-1, chk[0])
 	#cmd_list='~/checkpoint_after 10000M %s\n' % chk[0]
 	for i in range(len(chk)):
 		if i == 0:
