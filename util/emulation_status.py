@@ -545,6 +545,18 @@ spec_chk_list = [
 		['258c','lbm','omnetpp','omnetpp','soplex','wrf','xalanc','xalanc','zeusmp'],
 		['268c','bwaves','gromacs','quantum','mcf','omnetpp','omnetpp','soplex','xalanc'],
 		['278c','bwaves','GemsFDTD','quantum','quantum','quantum','namd','omnetpp','xalanc'],
+#
+# # 8 benchs 8 core MIMF/MIMNF/MNIMF/MNIMNF/MIMF/MIMNF/MNIMF/MNIMNF
+		['G1','milc','sjeng','gobmk','quantum','soplex','sjeng','gcc','bzip'],
+		['G2','lbm','mcf','gcc','bzip','sphinx','astar','gromacs','xalanc'],
+		['G3','soplex','astar','perl','calculix','milc','sjeng','gobmk','deal'],
+		['G4','sphinx','mcf','gromacs','hmmer','lbm','mcf','namd','calculix'],
+		['G5','cactusADM','astar','namd','xalanc','soplex','astar','perl','hmmer'],
+		['G6','lbm','sjeng','gcc','povray','sphinx','astar','gobmk','povray'],
+		['G7','cactusADM','astar','gobmk','deal','cactusADM','mcf','perl','bzip'],
+		['G8','milc','mcf','gromacs','omnetpp','cactusADM','mcf','gromacs','omnetpp'],
+		['G9','sphinx','sjeng','namd','h264','lbm','sjeng','gcc','h264'],
+		['G10','soplex','astar','perl','bzip','milc','astar','namd','quantum'],
 		]
 
 spec_bench_specifiers = [
